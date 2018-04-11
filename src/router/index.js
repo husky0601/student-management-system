@@ -78,7 +78,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/course/list',
     name: '课程信息',
-    meta: { title: '课程信息'},
+    meta: { title: '课程信息', roles: ["admin"]},
     children: [
       {
         path: 'list',
@@ -103,7 +103,7 @@ export const constantRouterMap = [
         path: 'review',
         name: '审核课程',
         component: () => import('@/views/Course/ReviewCourse'),
-        meta: {title: '审核课程'}
+        meta: {title: '审核课程', roles: ["admin"]}
       }
     ]
   },
@@ -188,4 +188,162 @@ export default new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
+
+// export const asyncRouterMap = [
+//   {
+//     path: '/',
+//     component: Layout,
+//     redirect: '/dashboard',
+//     name: '权限',
+//     hidden: true,
+//     children: [{
+//       path: 'dashboard',
+//       component: () => import('@/views/dashboard/index')
+//     }]
+//   },
+
+//   // {
+//   //   path: '/example',
+//   //   component: Layout,
+//   //   redirect: '/example/table',
+//   //   name: '例子',
+//   //   meta: { title: 'Example', icon: 'example' },
+//   //   children: [
+//   //     {
+//   //       path: 'table',
+//   //       name: 'Table',
+//   //       component: () => import('@/views/table/index'),
+//   //       meta: { title: 'Table', icon: 'table' }
+//   //     },
+//   //     {
+//   //       path: 'tree',
+//   //       name: 'Tree',
+//   //       component: () => import('@/views/tree/index'),
+//   //       meta: { title: 'Tree', icon: 'tree' }
+//   //     }
+//   //   ]
+//   // },
+
+//   // {
+//   //   path: '/form',
+//   //   component: Layout,
+//   //   children: [
+//   //     {
+//   //       path: 'index',
+//   //       name: 'Form',
+//   //       component: () => import('@/views/form/index'),
+//   //       meta: { title: '表单', icon: 'form' }
+//   //     }
+//   //   ]
+//   // },
+
+
+//   {
+//     path: '/course',
+//     component: Layout,
+//     redirect: '/course/list',
+//     name: '课程信息',
+//     meta: { title: '课程信息', roles: ["admin"]},
+//     children: [
+//       {
+//         path: 'list',
+//         name: '课程列表',
+//         component: () => import('@/views/Course/CourseList'),
+//         meta: { title: '课程列表'},
+//       },
+//       {
+//         path: 'comment',
+//         name: '课程评价',
+//         component: () => import('@/views/Course/Comment'),
+//         hidden: true,
+//         meta: { title: '课程评价'},
+//       },
+//       {
+//         path: 'add',
+//         name: '添加课程',
+//         component: () => import('@/views/Course/AddCourse'),
+//         meta: { title: '添加课程'}
+//       },
+//       {
+//         path: 'review',
+//         name: '审核课程',
+//         component: () => import('@/views/Course/ReviewCourse'),
+//         meta: {title: '审核课程', roles: ["admin"]}
+//       }
+//     ]
+//   },
+
+//   {
+//     path: '/score',
+//     component: Layout,
+//     redirect: '/score/list',
+//     name: '成绩信息',
+//     meta: { title: '成绩信息'},
+//     children: [
+//       {
+//         path: 'list',
+//         name: '成绩列表',
+//         component: () => import('@/views/Score/ScoreList'),
+//         meta: { title: '成绩列表'}
+//       },
+//       {
+//         path: 'add',
+//         name: '添加成绩',
+//         component: () => import('@/views/Score/AddScore'),
+//         meta: { title: '添加成绩'}
+//       },
+//       {
+//         path: 'update',
+//         name: '修改成绩',
+//         component: () => import('@/views/Score/UpdateScore'),
+//         meta: {title: '修改成绩'}
+//       }
+//     ]
+//   },
+
+//   {
+//     path: '/student',
+//     component: Layout,
+//     redirect: '/student/list',
+//     name: '学生信息',
+//     meta: { title: '学生信息'},
+//     children: [
+//       {
+//         path: 'list',
+//         name: '学生列表',
+//         component: () => import('@/views/Student/StudentList'),
+//         meta: { title: '学生列表'}
+//       },
+//       {
+//         path: 'selfList',
+//         name: '个人信息',
+//         component: () => import('@/views/Student/SelfStudentList'),
+//         meta: { title: '个人信息'}
+//       }
+//     ]
+//   },  
+
+//   {
+//     path: '/teacher',
+//     component: Layout,
+//     redirect: '/teacher/list',
+//     name: '教师信息',
+//     meta: { title: '教师信息'},
+//     children: [
+//       {
+//         path: 'list',
+//         name: '教师列表',
+//         component: () => import('@/views/Teacher/TeacherList'),
+//         meta: { title: '教师列表'}
+//       },
+//       {
+//         path: 'selfList',
+//         name: '个人信息',
+//         component: () => import('@/views/Teacher/SelfTeacherList'),
+//         meta: { title: '个人信息'}
+//       }
+//     ]
+//   },  
+// ]
+
 

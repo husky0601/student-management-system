@@ -5,7 +5,7 @@
     <div class="filter-container">
       <el-row :gutter="10">
         <el-col :span="3" :offset="1" class="filter-item">
-          <h3>{{studentName}}</h3>
+          <h3>{{name}}</h3>
         </el-col>
 
         <el-col :span="5" :offset="1" class="filter-item">
@@ -50,7 +50,7 @@
 
       <el-table-column align="center" label="课程名称">
         <template slot-scope="scope">
-          <span class="editPrimary" @click="handleUpdate(scope.row)">{{scope.row.title}}</span>
+          <span>{{scope.row.title}}</span>
         </template>
       </el-table-column>
 
@@ -101,6 +101,7 @@
 
 <script>
 import courseApi from "@/api/course";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -119,6 +120,11 @@ export default {
       },
       
     };
+  },
+  computed: {
+    ...mapGetters([
+      'name'
+    ])
   },
   created() {
     this.getList();

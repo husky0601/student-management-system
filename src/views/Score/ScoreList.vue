@@ -5,7 +5,7 @@
     <div class="filter-container">
       <el-row :gutter="10">
         <el-col :span="3" :offset="1" class="filter-item">
-          <h3>{{studentName}}</h3>
+          <h3>{{name}}</h3>
         </el-col>
 
         <el-col :span="5" class="filter-item">
@@ -76,6 +76,8 @@
 
 <script>
 import scoreApi from "@/api/score";
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
@@ -83,7 +85,7 @@ export default {
       listLoading: false,
       selectDisable: false,
       pageTotal: 20,
-      studentName: '学生姓名',
+      // studentName: '学生姓名',
       isStudent: false,
       termOption: [1,2,3,4,5,6,7,8],
       queryList: {
@@ -93,6 +95,11 @@ export default {
         studentId: ''
       }
     };
+  },
+  computed: {
+    ...mapGetters([
+      'name'
+    ])
   },
   created() {
     this.getList();

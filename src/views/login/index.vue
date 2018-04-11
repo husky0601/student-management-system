@@ -2,6 +2,11 @@
   <div class="login-container">
     <el-form autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left" label-width="0px" class="card-box login-form">
       <h3 class="title">创新班学生信息管理系统</h3>
+
+      <div class="login-error" v-show="showError">
+        <p>用户名或密码错误，请正确填写</p>
+      </div>
+
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
           <svg-icon icon-class="user" />
@@ -20,7 +25,7 @@
 
       <div class="login-role">
         <el-radio-group v-model="loginForm.role">
-          <el-radio v-for="(role,index) in roleGroup" :key="index" :label="index">{{role}}</el-radio>
+          <el-radio v-for="(role,index) in roleGroup" :key="index" :label="role">{{role}}</el-radio>
         </el-radio-group>
       </div>
 
@@ -29,8 +34,8 @@
           Sign in
         </el-button>
       </el-form-item>
-
     </el-form>
+    
   </div>
 </template>
 
@@ -58,7 +63,7 @@ export default {
       loginForm: {
         username: "admin",
         password: "admin",
-        role: 0
+        role: '学生'
       },
       loginRules: {
         username: [
@@ -68,7 +73,8 @@ export default {
       },
       roleGroup: ['学生', '教师', '管理员'],
       loading: false,
-      pwdType: "password"
+      pwdType: "password",
+      showError: false
     };
   },
   methods: {
@@ -83,9 +89,13 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
+          console.log(this.loginForm)
           this.$store
             .dispatch("Login", this.loginForm)
             .then(() => {
+              // if(res.code != 1){
+              //   this.showError = true
+              // }
               this.loading = false;
               this.$router.push({ path: "/" });
             })
@@ -183,6 +193,10 @@ $light_gray: #eee;
   }
   .login-role{
     margin: 10px 10px 20px;
+  }
+  .login-error{
+    color: red;
+    text-align: center
   }
 }
 </style>

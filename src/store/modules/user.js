@@ -2,11 +2,28 @@ import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
+  // state: {
+  //   id: '',
+  //   name: '',
+  //   role: ''
+  // },
+  // mutations: {
+  //   GET_ID(state,id){
+  //     state.id = id
+  //   },
+  //   GET_NAME(state,name){
+  //     state.name = name
+  //   },
+  //   GET_ROLE(state,role){
+  //     state.role = role
+  //   }
+  // },
   state: {
     token: getToken(),
     name: '',
     avatar: '',
-    roles: []
+    roles: [],
+    id: ''
   },
 
   mutations: {
@@ -21,8 +38,12 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_ID: (state, id) => {
+      state.id = id
     }
   },
+
 
   actions: {
     // 登录
@@ -33,6 +54,10 @@ const user = {
           const data = response.data
           setToken(data.token)
           commit('SET_TOKEN', data.token)
+          // commit('SET_ROLES', data.roles)
+          // commit('SET_NAME', data.name)
+          // commit('SET_AVATAR', data.avatar)
+          // commit('SET_ID', data.id)
           resolve()
         }).catch(error => {
           reject(error)
@@ -47,7 +72,8 @@ const user = {
           const data = response.data
           commit('SET_ROLES', data.roles)
           commit('SET_NAME', data.name)
-          commit('SET_AVATAR', data.avatar)
+          commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
+          commit('SET_ID', data.id)
           resolve(response)
         }).catch(error => {
           reject(error)

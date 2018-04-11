@@ -7,7 +7,8 @@ export function login(username, password) {
     method: 'post',
     data: {
       username,
-      password
+      password,
+      // role
     }
   })
 }

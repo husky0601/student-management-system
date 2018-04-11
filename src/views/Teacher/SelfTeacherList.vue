@@ -4,42 +4,43 @@
     <!-- 搜索栏 -->
     <div class="filter-container">
       <el-row :gutter="10">
+        <el-col :span="3" :offset="1" class="filter-item">
+          <h3>{{name}}</h3>
+        </el-col>
+
         <el-col :span="5" :offset="1" class="filter-item">
-          <!-- <span>课程名称：</span> -->
           <el-input placeholder="课程名称" v-model="queryList.courseName"></el-input>
         </el-col>
 
         <el-col :span="4" class="filter-item">
-          <!-- <label>上课时间：</label> -->
-          <el-select v-model="queryList.time" placeholder="上课时间">
-            <el-option v-for="time in timeOption" :key="time" :value="time" :label="time">
+          <el-select v-model="queryList.term" placeholder="学期">
+            <el-option v-for="(term, index) in termOption" :key="index" :value="term" :label="term">
             </el-option>
           </el-select>
         </el-col>
 
-        <el-col :span="5" class="filter-item">
-          <!-- <label>任课老师：</label> -->
+        <!-- <el-col :span="5" class="filter-item">
           <el-input v-model="queryList.teacher" placeholder="任课老师"></el-input>
-        </el-col>
+        </el-col> -->
 
         <el-col :span="2" :offset="1" class="filter-item">
           <el-button type="primary" @click="handleFilter">搜索</el-button>
         </el-col>
 
         <el-col :span="2" class="filter-item">
-          <el-button plain @click="handleSelectCourse">提交</el-button>
+          <el-button plain>个人课表</el-button>
         </el-col>
       </el-row>
     </div>
 
     <!-- 表格 -->
     <el-table :data="list" v-loading="listLoading" element-loading-text="加载中..." border fit highlight-current-row style="100%">
-
-      <el-table-column  align="center" label="多选" width="55">
+      <!-- <el-table-column align="center" label="审核状态">
         <template slot-scope="scope">
-          <el-checkbox :disabled="isStudent" @change="handleSelectChange(scope.row)"></el-checkbox>
+          <el-tag size="mini" v-if="isReview" type="success" disabled>已审核</el-tag>
+          <el-tag size="mini" v-else disabled>待审核</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column align="center" label="课程编码">
         <template slot-scope="scope">
@@ -53,39 +54,46 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="上课时间">
+      <el-table-column align="center" label="周学时">
         <template slot-scope="scope">
-          <span>{{scope.row.display_time}}</span>
+          <span>{{scope.row.display_term}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="上课教室">
+      <!-- <el-table-column align="center" label="上课教室">
         <template slot-scope="scope">
           <span>{{scope.row.address}}</span>
         </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="任课老师">
-        <template slot-scope="scope">
-          <span>{{scope.row.pageviews}}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="课程剩余量">
-        <template slot-scope="scope">
-          <span>{{scope.row.pageviews}}</span>
-        </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column align="center" label="学分">
         <template slot-scope="scope">
-          <span>{{scope.row.status}}</span>
+          <span>{{scope.row.pageviews}}</span>
         </template>
       </el-table-column>
+
+      <el-table-column align="center" label="最大报名人数">
+        <template slot-scope="scope">
+          <span>{{scope.row.max}}</span>
+        </template>
+      </el-table-column>
+
+      <!-- <el-table-column align="center" label="绩点">
+        <template slot-scope="scope">
+          <span>{{scope.row.status}}</span>
+        </template>
+      </el-table-column> -->
 
       <el-table-column align="center" label="课程性质">
         <template slot-scope="scope">
           <span>{{scope.row.status}}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="课程状态">
+        <template slot-scope="scope">
+          <el-tag size="mini" v-if="isReview" type="success" disabled>已审核</el-tag>
+          <el-tag size="mini" v-else disabled>待审核</el-tag>
         </template>
       </el-table-column>
     </el-table>
@@ -99,25 +107,31 @@
 </template>
 
 <script>
-import courseApi from "@/api/course";
+import teacherApi from "@/api/teacher";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       list: null,
       listLoading: false,
-      selectDisable: false,
       pageTotal: 20,
-      studentId: '',
-      isStudent: false,
-      timeOption: ["8:30--10:00", "10:20--11:50", "14:0--15:30", "15:50--17:20"],
-      multipleSelection: [],
+      studentId: "",
+      studentName: '',
+      isReview: true,
+      termOption: [1,2,3,4,5,6,7,8],
       queryList: {
         page: 1,
         courseName: "",
-        time: "",
+        term: "",
         teacher: ""
-      }
+      },
+      
     };
+  },
+  computed: {
+    ...mapGetters([
+      'name'
+    ])
   },
   created() {
     this.getList();
@@ -125,73 +139,25 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      courseApi.getList(this.queryList).then(res => {
+      teacherApi.getList(this.queryList).then(res => {
         this.list = res.data.items;
-        // console.log(this.list)
         this.listLoading = false;
       });
     },
-
-    // 搜索列表
     handleFilter() {
       this.queryList.page = 1;
       this.getList();
     },
-
-    // 换页
     handleCurrentChange(val) {
       this.queryList.page = val;
       this.getList();
     },
-
-    // 更改选择
-    handleSelectChange(row) {
-      let flag = false,
-        index;
-      if (this.multipleSelection.length === 0) {
-        this.multipleSelection.push(row.id);
-      } else {
-        this.multipleSelection.forEach((item, i) => {
-          if (item === row.id) {
-            flag = true;
-            index = i;
-            return;
-          }
-        });
-        if (!flag) {
-          this.multipleSelection.push(row.id);
-          if (this.multipleSelection.length >= 5) {
-            this.$message({
-              message: "至多选择五门课程",
-              type: "warning"
-            });
-          }
-        } else {
-          this.multipleSelection.splice(index, 1);
-        }
-      }
-    },
-    handleSelectCourse() {
-      if(this.multipleSelection.length === 0) {
-        this.$message({
-          message: '请至少选择一门课程',
-          type: 'warning'
-        })
-        return
-      }
-      let params = {
-        dataArray: this.multipleSelection,
-        id: this.studentId
-      };
-      courseApi.selectCourse(params).then(res => {
-        if(res.code === 1){
-          this.$message({
-            message: '提交成功',
-            type: 'success'
-          })
-        }
-      })
-    }
   }
 };
 </script>
+
+<style lang="css" scoped>
+h3{
+  margin-top: 10px !important;
+}
+</style>

@@ -92,5 +92,8 @@ a:hover {
   }
 }
 .editPrimary{
-  color: #409EFF
+  color: #409EFF;
+  &:hover{
+    cursor: pointer;
+  }
 }

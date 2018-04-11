@@ -17,65 +17,52 @@
         </el-col>
 
         <el-col :span="2" class="filter-item">
-          <el-button plain>个人课表</el-button>
+          <el-button plain @click="handleCreate">添加学生</el-button>
         </el-col>
       </el-row>
     </div>
 
     <!-- 表格 -->
     <el-table :data="list" v-loading="listLoading" element-loading-text="加载中..." border fit highlight-current-row style="100%">
-      <!-- <el-table-column align="center" label="审核状态">
+      <el-table-column align="center" label="学生学号">
         <template slot-scope="scope">
-          <el-tag size="mini" v-if="isReview" type="success" disabled>已审核</el-tag>
-          <el-tag size="mini" v-else disabled>待审核</el-tag>
+          <a href="javascript:;" class="editPrimary" @click="handleUpdate(scope.row)">{{scope.row.id}}</a>
         </template>
-      </el-table-column> -->
+      </el-table-column>
 
-      <el-table-column align="center" label="课程编码">
+      <el-table-column align="center" label="学生姓名">
         <template slot-scope="scope">
           <span>{{scope.row.id}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="课程名称">
+      <el-table-column align="center" label="所属学院">
         <template slot-scope="scope">
-          <span class="editPrimary" @click="handleUpdate(scope.row)">{{scope.row.title}}</span>
+          <span>{{scope.row.title}}</span>
         </template>
       </el-table-column>
 
-      <!-- <el-table-column align="center" label="上课时间">
-        <template slot-scope="scope">
-          <span>{{scope.row.display_time}}</span>
-        </template>
-      </el-table-column> -->
-
-      <!-- <el-table-column align="center" label="上课教室">
-        <template slot-scope="scope">
-          <span>{{scope.row.address}}</span>
-        </template>
-      </el-table-column> -->
-
-      <el-table-column align="center" label="任课老师">
+      <el-table-column align="center" label="所属班级">
         <template slot-scope="scope">
           <span>{{scope.row.pageviews}}</span>
         </template>
       </el-table-column>
 
-      <!-- <el-table-column align="center" label="最大报名人数">
+      <el-table-column align="center" label="性别">
         <template slot-scope="scope">
-          <span>{{scope.row.max}}</span>
+          <span>{{scope.row.id}}</span>
         </template>
-      </el-table-column> -->
+      </el-table-column>
 
-      <el-table-column align="center" label="成绩">
+      <el-table-column align="center" label="联系方式">
         <template slot-scope="scope">
           <span>{{scope.row.status}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="课程性质">
+      <el-table-column align="center" label="删除学生">
         <template slot-scope="scope">
-          <span>{{scope.row.status}}</span>
+          <el-button type="danger" @click="handelDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -89,61 +76,63 @@
     <!-- 表单弹框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="right" label-width="110px" style='width: 400px; margin-left:50px;'>
-        <el-form-item label="课程名称" prop="courseName">
-          <el-input v-model="temp.courseName"></el-input>
+        <el-form-item label="学号" prop="studentId">
+          <el-input v-model.number="temp.studentId"></el-input>
         </el-form-item>
 
-        <el-form-item label="上课教室" prop="classroom">
-          <el-input v-model="temp.classroom"></el-input>
+        <el-form-item label="姓名" prop="studentName">
+          <el-input v-model="temp.studentName"></el-input>
         </el-form-item>
 
-        <el-form-item label="周学时" prop="period">
-          <el-input v-model="temp.period"></el-input>
+        <el-form-item label="学院" prop="college">
+          <el-input v-model="temp.college"></el-input>
         </el-form-item>
 
-        <el-form-item label="课程性质" prop="type">
-          <el-input v-model="temp.type"></el-input>
+        <el-form-item label="专业" prop="specialty">
+          <el-input v-model="temp.specialty"></el-input>
         </el-form-item>
 
-        <el-form-item label="学分" prop="credits">
-          <el-input v-model="temp.credits"></el-input>
+        <el-form-item label="联系方式" prop="phone" v-if="dialogStatus=='update'">
+          <el-input v-model="temp.phone"></el-input>
         </el-form-item>
 
-        <el-form-item label="最大报名人数" prop="maxStudent">
-          <el-input v-model="temp.maxStudent"></el-input>
+        <el-form-item label="性别" prop="six">
+          <!-- <el-input v-model="temp.six"></el-input> -->
+          <el-radio-group v-model="temp.six">
+            <el-radio :label="0">男</el-radio>
+            <el-radio :label="1">女</el-radio>
+          </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="任课老师" prop="teacher">
-          <el-input v-model="temp.teacher"></el-input>
-        </el-form-item>
-
-        <el-form-item label="上课时间" prop="time">
-          <el-select v-model="temp.time" placeholder="上课时间">
-            <el-option v-for="(time,index) in timeOption" :key="index" :value="index" :label="time">
-            </el-option>
-          </el-select>
-          <!-- <el-input v-model="temp.time"></el-input> -->
-        </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button  v-if="dialogStatus=='create'" type="primary" @click="create">添加</el-button>
-        <el-button  v-else type="primary" @click="update">修改</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="create">添加</el-button>
+        <el-button v-else type="primary" @click="update">修改</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import courseApi from "@/api/course";
+import studentApi from "@/api/student";
+import validatPhone from "@/utils/validate";
 export default {
   data() {
+    var checkPhone = (rule, value, callback) => {
+      if (!value) callback();
+      setTimeout(() => {
+        if (!validatPhone(value)) {
+          callback(new Error("请填写正确的手机号码"));
+        }
+      }, 1000);
+    };
     return {
       list: null,
       listLoading: false,
       pageTotal: 20,
       studentId: "",
-      studentName: '',
+      studentName: "",
       isReview: true,
       dialogStatus: "",
       dialogFormVisible: false,
@@ -160,39 +149,30 @@ export default {
       queryList: {
         page: 1,
         courseName: "",
+        studentName: "",
+        studentId: "",
         time: "",
         teacher: ""
       },
       temp: {
-        id: undefined,
-        courseName: "",
-        period: "",
-        maxStudent: null,
-        type: "",
-        credits: null,
-        classroom: "",
-        teacher: "",
-        time: ""
+        studentId: undefined,
+        studentName: "",
+        college: "",
+        specialty: "",
+        six: 0,
+        phone: ""
       },
       rules: {
-        courseName: [
-          { required: true, message: "请填写课程名称", trigger: "change" }
+        studentId: [
+          { required: true, message: "请填写学生学号" },
+          { type: "number", message: "学号必须为数字值" }
         ],
-        period: [
-          { required: true, message: "请填写周学时", trigger: "change" }
+        studentName: [
+          { required: true, message: "请填写学生姓名", trigger: "change" }
         ],
-        type: [{ required: true, message: "请填写课程性质", trigger: "blur" }],
-        credits: [{ required: true, message: "请填写学分", trigger: "blur" }],
-        maxStudent: [
-          { required: true, message: "请填写最大报名人数", trigger: "blur" }
-        ],
-        classroom: [
-          { required: true, message: "请填写上课教室", trigger: "blur" }
-        ],
-        teacher: [
-          { required: true, message: "请填写任课教师", trigger: "blur" }
-        ],
-        time: [{ required: true, message: "请选择上课时间", trigger: "change" }]
+        college: [{ required: true, message: "请填写学院", trigger: "blur" }],
+        specialty: [{ required: true, message: "请填写专业", trigger: "blur" }],
+        phone: [{ validator: checkPhone, trigger: "change" }]
       }
     };
   },
@@ -202,22 +182,19 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      courseApi.getList(this.queryList).then(res => {
+      studentApi.getList(this.queryList).then(res => {
         this.list = res.data.items;
         this.listLoading = false;
       });
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        courseName: "",
-        period: "",
-        maxStudent: null,
-        type: "",
-        credits: null,
-        classroom: "",
-        teacher: "",
-        time: ""
+        studentId: undefined,
+        studentName: "",
+        college: "",
+        specialty: "",
+        six: 0,
+        phone: ""
       };
     },
     handleFilter() {
@@ -228,7 +205,7 @@ export default {
       this.queryList.page = val;
       this.getList();
     },
-    handleAddCourse() {
+    handleCreate() {
       this.resetTemp();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
@@ -239,7 +216,7 @@ export default {
     create() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          courseApi.create(this.temp).then(res => {
+          studentApi.create(this.temp).then(res => {
             this.dialogFormVisible = false;
             this.$message({
               message: "添加成功",
@@ -251,8 +228,9 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row);
-      (this.dialogStatus = "update"),
-        (this.dialogFormVisible = true),
+      console.log(this.temp);
+      this.dialogStatus = "update";
+      (this.dialogFormVisible = true),
         this.$nextTick(() => {
           this.$refs["dataForm"].clearValidate();
         });
@@ -261,7 +239,7 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           // const tempDate = object.assign({},this.temp)
-          courseApi.createForManage(this.temp).then(() => {
+          studentApi.update(this.temp).then(() => {
             this.dialogFormVisible = false;
             this.$message({
               message: "添加成功",
@@ -270,13 +248,34 @@ export default {
           });
         }
       });
+    },
+    handelDelete(row) {
+      this.$confirm("此操作将永久删除该学生, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          studentApi.deleteStudent(row.studentId).then(res => {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     }
   }
 };
 </script>
 
 <style lang="css" scoped>
-h3{
+h3 {
   margin-top: 10px !important;
 }
 </style>

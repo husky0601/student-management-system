@@ -11,7 +11,7 @@
 
         <el-col :span="4" class="filter-item">
           <!-- <label>上课时间：</label> -->
-          <el-select v-model="queryList.time" placeholder="上课时间">
+          <el-select v-model="queryList.dayTime" placeholder="上课时间">
             <el-option v-for="time in timeOption" :key="time" :value="time" :label="time">
             </el-option>
           </el-select>
@@ -19,7 +19,7 @@
 
         <el-col :span="5" class="filter-item">
           <!-- <label>任课老师：</label> -->
-          <el-input v-model="queryList.teacher" placeholder="任课老师"></el-input>
+          <el-input v-model="queryList.teacherName" placeholder="任课老师"></el-input>
         </el-col>
 
         <el-col :span="2" :offset="1" class="filter-item">
@@ -37,49 +37,49 @@
 
       <el-table-column align="center" label="课程编码">
         <template slot-scope="scope">
-          <span>{{scope.row.id}}</span>
+          <span>{{scope.row.courseId}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="课程名称">
         <template slot-scope="scope">
-          <span>{{scope.row.title}}</span>
+          <span>{{scope.row.courseName}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="上课时间">
         <template slot-scope="scope">
-          <span>{{scope.row.display_time}}</span>
+          <span>{{scope.row.weekTime}}<br>{{scope.row.dayTime}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="上课教室">
         <template slot-scope="scope">
-          <span>{{scope.row.address}}</span>
+          <span>{{scope.row.classroom}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="任课老师">
         <template slot-scope="scope">
-          <span>{{scope.row.pageviews}}</span>
+          <span>{{scope.row.teacherName}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="课程剩余量">
         <template slot-scope="scope">
-          <span>{{scope.row.pageviews}}</span>
+          <span>{{scope.row.courseRemain}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="学分">
         <template slot-scope="scope">
-          <span>{{scope.row.status}}</span>
+          <span>{{scope.row.credits}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="课程性质">
         <template slot-scope="scope">
-          <span>{{scope.row.status}}</span>
+          <span>{{scope.row.type}}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -110,7 +110,7 @@
         </el-form-item>
 
         <el-form-item label="最大报名人数" prop="maxStudent">
-          <el-input v-model="temp.maxStudent"></el-input>
+          <el-input v-model="temp.courseTotal"></el-input>
         </el-form-item>
       </el-form>
 
@@ -123,6 +123,7 @@
 
 <script>
 import courseApi from "@/api/course";
+// import mapGetters from 'vuex'
 export default {
   data() {
     return {
@@ -140,14 +141,14 @@ export default {
       queryList: {
         page: 1,
         courseName: "",
-        time: "",
-        teacher: ""
+        dayTime: "",
+        teacherName: ""
       },
       temp:{
-        id:undefined,
+        teacherId:undefined,
         courseName: '',
         period: '',
-        maxStudent: null,
+        courseTotal: null,
         type: '',
         credits: null
       },
@@ -160,6 +161,11 @@ export default {
       }
     };
   },
+  // computed: {
+  //   ...mapGetters([
+  //     'id'
+  //   ])
+  // },
   created() {
     this.getList();
   },
@@ -174,10 +180,10 @@ export default {
     },
     resetTemp(){
       this.temp = {
-        id:undefined,
+        teacherId:undefined,
         courseName: '',
         period: '',
-        maxStudent: null,
+        courseTotal: null,
         type: '',
         credits: null
       }
@@ -201,6 +207,7 @@ export default {
     create(){
       this.$refs['dataForm'].validate((valid) => {
         if(valid) {
+          // this.temp.teacherId = this.id
           courseApi.create(this.temp).then(res => {
             this.dialogFormVisible = false
             this.$message({

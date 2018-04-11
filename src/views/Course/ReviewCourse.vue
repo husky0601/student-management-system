@@ -10,14 +10,14 @@
         </el-col>
 
         <el-col :span="4" class="filter-item">
-          <el-select v-model="queryList.time" placeholder="上课时间">
+          <el-select v-model="queryList.dayTime" placeholder="上课时间">
             <el-option v-for="time in timeOption" :key="time" :value="time" :label="time">
             </el-option>
           </el-select>
         </el-col>
 
         <el-col :span="5" class="filter-item">
-          <el-input v-model="queryList.teacher" placeholder="任课老师"></el-input>
+          <el-input v-model="queryList.teacherName" placeholder="任课老师"></el-input>
         </el-col>
 
         <el-col :span="2" :offset="1" class="filter-item">
@@ -41,49 +41,49 @@
 
       <el-table-column align="center" label="课程编码">
         <template slot-scope="scope">
-          <span>{{scope.row.id}}</span>
+          <span>{{scope.row.courseId}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="课程名称">
         <template slot-scope="scope">
-          <span class="editPrimary" @click="handleUpdate(scope.row)">{{scope.row.title}}</span>
+          <span class="editPrimary" @click="handleUpdate(scope.row)">{{scope.row.courseName}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="上课时间">
         <template slot-scope="scope">
-          <span>{{scope.row.display_time}}</span>
+          <span>{{scope.row.weekTime}}<br>{{scope.row.dayTime}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="上课教室">
         <template slot-scope="scope">
-          <span>{{scope.row.address}}</span>
+          <span>{{scope.row.classroom}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="提交老师">
         <template slot-scope="scope">
-          <span>{{scope.row.pageviews}}</span>
+          <span>{{scope.row.teacherName}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="最大报名人数">
         <template slot-scope="scope">
-          <span>{{scope.row.max}}</span>
+          <span>{{scope.row.courseTotal}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="学分">
         <template slot-scope="scope">
-          <span>{{scope.row.status}}</span>
+          <span>{{scope.row.credits}}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="课程性质">
         <template slot-scope="scope">
-          <span>{{scope.row.status}}</span>
+          <span>{{scope.row.type}}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -101,36 +101,46 @@
           <el-input v-model="temp.courseName"></el-input>
         </el-form-item>
 
-        <el-form-item label="上课教室" prop="classroom">
-          <el-input v-model="temp.classroom"></el-input>
+        <el-form-item label="周学时" prop="period">
+          <!-- <el-input v-model="temp.period"></el-input> -->
+          <el-input-number v-model="temp.period" :min="15" :max="25"></el-input-number>
         </el-form-item>
 
-        <el-form-item label="周学时" prop="period">
-          <el-input v-model="temp.period"></el-input>
+        <el-form-item label="学分" prop="credits">
+          <!-- <el-input v-model.number="temp.credits"></el-input> -->
+          <el-input-number v-model="temp.credits" :min="1" :max="4"></el-input-number>
         </el-form-item>
 
         <el-form-item label="课程性质" prop="type">
           <el-input v-model="temp.type"></el-input>
         </el-form-item>
 
-        <el-form-item label="学分" prop="credits">
-          <el-input v-model="temp.credits"></el-input>
+        <el-form-item label="最大报名人数" prop="courseTotal">
+          <el-input v-model.number="temp.courseTotal"></el-input>
         </el-form-item>
 
-        <el-form-item label="最大报名人数" prop="maxStudent">
-          <el-input v-model="temp.maxStudent"></el-input>
+        <el-form-item label="任课老师" prop="teacherName">
+          <el-input v-model="temp.teacherName"></el-input>
         </el-form-item>
 
-        <el-form-item label="任课老师" prop="teacher">
-          <el-input v-model="temp.teacher"></el-input>
+        <el-form-item label="上课星期" prop="weekTime">
+          <el-select v-model="temp.weekTime" placeholder="上课星期">
+            <el-option v-for="(week,index) in weekOption" :key="index" :value="index" :label="week">
+            </el-option>
+          </el-select>
+          <!-- <el-input v-model="temp.time"></el-input> -->
         </el-form-item>
 
-        <el-form-item label="上课时间" prop="time">
-          <el-select v-model="temp.time" placeholder="上课时间">
+        <el-form-item label="上课时间" prop="dayTime">
+          <el-select v-model="temp.dayTime" placeholder="上课时间">
             <el-option v-for="(time,index) in timeOption" :key="index" :value="index" :label="time">
             </el-option>
           </el-select>
           <!-- <el-input v-model="temp.time"></el-input> -->
+        </el-form-item>
+
+         <el-form-item label="上课教室" prop="classroom">
+          <el-input v-model="temp.classroom"></el-input>
         </el-form-item>
       </el-form>
 
@@ -144,6 +154,7 @@
 
 <script>
 import courseApi from "@/api/course";
+// import mapGetters from 'vuex'
 export default {
   data() {
     return {
@@ -164,22 +175,26 @@ export default {
         "14:0--15:30",
         "15:50--17:20"
       ],
+      weekOption:[
+        "星期一", "星期二","星期三","星期四","星期五","星期六","星期日",
+      ],
       queryList: {
         page: 1,
         courseName: "",
-        time: "",
-        teacher: ""
+        dayTime: "",
+        teacherName: ""
       },
       temp: {
-        id: undefined,
+        teacherId: undefined,
+        teacherName: '',
         courseName: "",
         period: "",
-        maxStudent: null,
+        courseTotal: null,
         type: "",
         credits: null,
         classroom: "",
-        teacher: "",
-        time: ""
+        dayTime: "",
+        weekTime:''
       },
       rules: {
         courseName: [
@@ -190,19 +205,26 @@ export default {
         ],
         type: [{ required: true, message: "请填写课程性质", trigger: "blur" }],
         credits: [{ required: true, message: "请填写学分", trigger: "blur" }],
-        maxStudent: [
-          { required: true, message: "请填写最大报名人数", trigger: "blur" }
+        courseTotal: [
+          { required: true, message: "请填写最大报名人数"},
+          { type: 'number', message: '最大报名人数必须为数字值'}
         ],
         classroom: [
           { required: true, message: "请填写上课教室", trigger: "blur" }
         ],
-        teacher: [
+        teacherName: [
           { required: true, message: "请填写任课教师", trigger: "blur" }
         ],
-        time: [{ required: true, message: "请选择上课时间", trigger: "change" }]
+        dayTime: [{ required: true, message: "请选择上课时间", trigger: "change" }],
+        weekTime: [{ required: true, message: "请选择上课星期", trigger: "change" }],
       }
     };
   },
+  // computed: {
+  //   ...mapGetters([
+  //     'id'
+  //   ])
+  // },
   created() {
     this.getList();
   },
@@ -258,11 +280,11 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row);
-      (this.dialogStatus = "update"),
-        (this.dialogFormVisible = true),
-        this.$nextTick(() => {
-          this.$refs["dataForm"].clearValidate();
-        });
+      this.dialogStatus = "update"
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     update() {
       this.$refs["dataForm"].validate(valid => {
